@@ -87,7 +87,7 @@ def get_best_prices(card_list, keywords):
 
     filtered_card_list.sort(key=myFunc)
 
-    return {keywords: [filtered_card_list]}
+    return {keywords: filtered_card_list}
 
 
 def myFunc(e):
@@ -98,6 +98,7 @@ def get_prices(keywords, edition, condition, language):
     # Get card info
     cards = get_card_info(card_key=keywords, edition=edition, condition=condition, source='t&t')
     card_list = []
+    tipo_cambio = 585
 
     if len(cards) > 0:
         for card in cards:
@@ -126,9 +127,10 @@ def get_prices(keywords, edition, condition, language):
 
                 p = float(
                     item.find_all("div", class_="col-2 text-center p-1")[0].text.replace('$', '').replace(',', ''))
+                pc = f'₡{format(float(p) * tipo_cambio, ",.0f")}'
                 quantity = int(item.find_all("option")[len(item.find_all("option")) - 1].attrs['value'])
                 card1 = CardInfo(card_name=card_name, card_key=card_key, condition=c,
-                                 price=p, edition=edition_, rarity=rarity, quantity=quantity)
+                                 price=p, pricec=pc, edition=edition_, rarity=rarity, quantity=quantity)
                 card_list.append(card1)
 
         card_list = get_best_prices(card_list=card_list, keywords=keywords)
