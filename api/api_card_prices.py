@@ -1,7 +1,7 @@
 from flask import Flask, request
 from flask_restful import Api
 
-from utils.helper import get_prices
+from utils.helper import tyt_get_prices
 
 app = Flask(__name__)
 api = Api(app)
@@ -17,7 +17,7 @@ def get():
         language = 'English'
 
         if 'keywords' in bar:
-            keywords = bar['keywords']
+            keywords = str(bar['keywords']).upper()
         else:
             raise Exception('Keywords were not provided!')
         if 'edition' in bar:
@@ -27,7 +27,7 @@ def get():
         if 'language' in bar:
             language = bar['language']
 
-        card_list = get_prices(keywords=keywords, edition=edition, condition=condition, language=language)
+        card_list = tyt_get_prices(keywords=keywords, edition=edition, condition=condition, language=language)
         return card_list
     except Exception as e:
         return e

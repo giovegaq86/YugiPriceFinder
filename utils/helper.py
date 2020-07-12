@@ -94,7 +94,7 @@ def myFunc(e):
     return e['price']
 
 
-def get_prices(keywords, edition, condition, language):
+def tyt_get_prices(keywords, edition, condition, language):
     # Get card info
     cards = get_card_info(card_key=keywords, edition=edition, condition=condition, source='t&t')
     card_list = []
@@ -122,6 +122,9 @@ def get_prices(keywords, edition, condition, language):
             card_key = card_info.replace(f' - {rarity} {edition_}', '').split(' - ')[-1]
             card_name = card_info.replace(f' - {card_key} - {rarity} {edition_}', '')
             items = card.find_all("div", class_="row position-relative align-center py-2 m-auto")
+            expansion = card.find_all("a")[2].text.replace(f' [{card_key.split("-")[0]}]', '')\
+                .replace(f' {edition_}', '').replace(f' Singles', '')
+            image = card.find_all("img")[0].attrs['data-src']
             for item in items:
                 c = get_condition(item.find_all("div", class_="col-3 text-center p-1")[1].text)
 
@@ -130,11 +133,11 @@ def get_prices(keywords, edition, condition, language):
                 pc = f'₡{format(float(p) * tipo_cambio, ",.0f")}'
                 quantity = int(item.find_all("option")[len(item.find_all("option")) - 1].attrs['value'])
                 card1 = CardInfo(card_name=card_name, card_key=card_key, condition=c,
-                                 price=p, pricec=pc, edition=edition_, rarity=rarity, quantity=quantity)
+                                 price=p, pricec=pc, edition=edition_, rarity=rarity, quantity=quantity,
+                                 expansion=expansion, image=image)
                 card_list.append(card1)
 
         card_list = get_best_prices(card_list=card_list, keywords=keywords)
-        # print_card_list(card_list=card_list, tipo_cambio=tipo_cambio)
         return card_list
     else:
         print(f'La carta "{keywords}" {edition} {condition} "NO" tiene stock!')
