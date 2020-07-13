@@ -1,5 +1,5 @@
 from card_info import CardInfo
-from utils.helper import get_condition, get_card_info, get_best_prices, print_card_list
+from utils.utils import get_condition, get_tyt_card_info, get_best_prices, print_card_list
 
 keyworks = 'IOC-025'
 edition = '1st Edition'
@@ -8,7 +8,7 @@ language = 'English'
 tipo_cambio = 581
 
 # Get card info
-cards = get_card_info(card_key=keyworks, edition=edition, condition=condition)
+cards = get_tyt_card_info(card_key=keyworks, edition=edition, condition=condition)
 card_list = []
 
 if len(cards) > 0:

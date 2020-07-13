@@ -2,7 +2,7 @@
 
 class CardInfo:
     def __init__(self, card_name, card_key, price=0, pricec="", condition="", edition="", rarity="", quantity=0,
-                 expansion="", image=""):
+                 expansion="", image="", o):
         self.card_name = card_name
         self.card_key = card_key
         self.price = price
