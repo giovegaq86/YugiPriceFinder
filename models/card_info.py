@@ -25,9 +25,9 @@ class CardInfo:
                             "quantity": self.quantity,
                             "condition": self.condition,
                             "edition": self.edition,
-                            "price": self.price,
+                            "price": f'${self.price}',
                             "pricec": self.pricec,
-                            "web_site": self.web_site
+                            "web_site": self.web_site,
                           }
         return dict_card_info
 

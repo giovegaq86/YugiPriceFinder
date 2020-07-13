@@ -1,3 +1,5 @@
-from utils.utils import tcgp_get_prices
+from helper.tcgplayer_utils import TCGPlayerUtils
 
-RESULTS = tcgp_get_prices(set_code='IOC-000')
+tcg = TCGPlayerUtils(exchange_rate=585)
+
+RESULTS = tcg.get_prices(set_code='IOC-000')
