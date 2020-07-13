@@ -2,7 +2,7 @@
 
 class CardInfo:
     def __init__(self, card_name, card_key, price=0, pricec="", condition="", edition="", rarity="", quantity=0,
-                 expansion="", image="", o):
+                 expansion="", image="", web_site=""):
         self.card_name = card_name
         self.card_key = card_key
         self.price = price
@@ -13,6 +13,7 @@ class CardInfo:
         self.quantity = quantity
         self.expansion = expansion
         self.image = image
+        self.web_site = web_site
 
     def get_dict_card_info(self):
         dict_card_info = {
@@ -25,7 +26,8 @@ class CardInfo:
                             "condition": self.condition,
                             "edition": self.edition,
                             "price": self.price,
-                            "pricec": self.pricec
+                            "pricec": self.pricec,
+                            "web_site": self.web_site
                           }
         return dict_card_info
 

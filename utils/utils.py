@@ -138,7 +138,7 @@ def tyt_get_prices(keywords, edition, condition, language):
                 quantity = int(item.find_all("option")[len(item.find_all("option")) - 1].attrs['value'])
                 card1 = CardInfo(card_name=card_name, card_key=card_key, condition=c,
                                  price=p, pricec=pc, edition=edition_, rarity=rarity, quantity=quantity,
-                                 expansion=expansion, image=image)
+                                 expansion=expansion, image=image, web_site='T&T')
                 card_list.append(card1)
 
         card_list = get_best_prices(card_list=card_list, keywords=keywords)
@@ -207,7 +207,7 @@ def tcgp_get_prices(set_code, edition="", condition="", language=""):
 
         card1 = CardInfo(card_name=card_name, card_key=set_code, condition=condition,
                          price=price, pricec=pc, edition=edition, rarity=rarity, quantity=quantity,
-                         expansion=expansion, image=image)
+                         expansion=expansion, image=image, web_site='TCGPlayer')
         card_list.append(card1)
 
     return card_list
