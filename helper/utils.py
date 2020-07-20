@@ -7,6 +7,9 @@ from selenium.webdriver.chrome.options import Options
 from requests_html import HTMLSession
 from bs4 import BeautifulSoup
 
+from models.card_sets import CardSets
+from models.set import Set
+
 
 class Utils:
     def get_condition(self, text):
@@ -61,9 +64,6 @@ class Utils:
             edition = 'Unlimited'
 
         return edition
-
-    def myFunc(self, e):
-        return e['price']
 
     def create_web_driver(self, headless=True):
         print('Creating web driver')
@@ -120,7 +120,7 @@ class Utils:
             new_card_list.append(le)
 
         if new_card_list:
-            new_card_list.sort(key=self.myFunc)
+            new_card_list = sorted(new_card_list, key=lambda k:(float(k['price'].replace('$', '').replace(',', ''))))
 
         return new_card_list
 
@@ -198,7 +198,7 @@ class Utils:
         mint_list = self.filter_list(card_list=mint_list)
         unknown_list = self.filter_list(card_list=unknown_list)
 
-        return damaged_list+heavily_list+moderately_list+lightly_list+played_list+mint_list+unknown_list
+        return damaged_list + heavily_list + moderately_list + lightly_list + played_list + mint_list + unknown_list
 
     def get_prices_by_edition(self, card_list):
         first_edition_list = []
@@ -226,7 +226,7 @@ class Utils:
                 limited_list.append(card)
             count += 1
 
-        card_list = self.get_prices_by_condition2(first_edition_list) + self.get_prices_by_condition2\
+        card_list = self.get_prices_by_condition2(first_edition_list) + self.get_prices_by_condition2 \
             (unlimited_list) + self.get_prices_by_condition2(limited_list)
 
         return {
@@ -235,6 +235,51 @@ class Utils:
             "expansion": expansion,
             "image": image,
             "card_list": card_list
+        }
+
+    def filter_card_list(self, card_list):
+        filtered_card_list = []
+
+        card_key = ""
+        card_name = ""
+        expansion = ""
+        image = ""
+
+        for card in card_list:
+
+            if len(filtered_card_list) == 0:
+                filtered_card_list.append(card)
+                card_key = card['card_key']
+                card_name = card['card_name']
+                expansion = card['expansion']
+                image = card['image']
+            else:
+                item_founded = False
+                for card2 in filtered_card_list:
+                    if card['card_key'] == card2['card_key'] and card['edition'] == card2['edition'] and \
+                            card['condition'] == card2['condition'] and card['rarity'] == card2['rarity']:
+                        item_founded = True
+                        if (card['quantity'] > 0 and float(card['price'].replace('$', '')) <
+                                float(card2['price'].replace('$', '')) or
+                                (card2['quantity'] == 0 and card['quantity'] > 0)):
+                            filtered_card_list.remove(card2)
+                            filtered_card_list.append(card)
+                            break
+
+                if not item_founded:
+                    filtered_card_list.append(card)
+                    item_founded = True
+
+        if len(filtered_card_list) > 1:
+            filtered_card_list = sorted(filtered_card_list,
+                                        key=lambda k:(float(k['price'].replace('$', '').replace(',', ''))))
+
+        return {
+            "card_key": card_key,
+            "card_name": card_name,
+            "expansion": expansion,
+            "image": image,
+            "card_list": filtered_card_list
         }
 
     def get_best_prices(self, card_list):
@@ -271,10 +316,50 @@ class Utils:
 
         return damaged_list + heavily_list + moderately_list + lightly_list + played_list + mint_list + unknown_list
 
-
     def get_exchange_rate(self):
-        url='https://tipodecambio.paginasweb.cr/api'
+        url = 'https://tipodecambio.paginasweb.cr/api'
         results = requests.get(url=url)
         exchange_rate = float(json.loads(results.content)['venta'])
 
         return exchange_rate
+
+    def get_card_info_from_name(self, name):
+        try:
+            print(f'Getting card info from name: {name}')
+            name = name.replace(' ', '%20')
+            url = f'https://db.ygoprodeck.com/api/v6/cardinfo.php?fname={name}'
+            results = requests.get(url=url)
+            card_info = json.loads(results.content)
+
+            card_sets = []
+
+            if not 'No card matching your query was found in the database' in str(card_info):
+                for card_set in card_info:
+                    sets = []
+                    if 'card_sets' in str(card_set):
+                        cs = card_set['card_sets']
+                        for s in cs:
+                            if len(sets) == 0:
+                                sets.append(Set(set_name=s['set_name'],
+                                                set_code=s['set_code']).get_dict_sets())
+                            else:
+                                item_found = False
+                                for ss in sets:
+                                    if s['set_code'] == ss['set_code']:
+                                        item_found = True
+                                        break
+
+                                if not item_found:
+                                    sets.append(Set(set_name=s['set_name'],
+                                                    set_code=s['set_code']).get_dict_sets())
+
+                        sets = sorted(sets, key=lambda k:(len(k['set_code']), k['set_code']))
+                        card_sets.append(CardSets(card_name=card_set['name'],
+                                                  image=card_set['card_images'][0]['image_url_small'],
+                                                  sets=sets).get_dict_card_sets())
+
+            print(f'Card sets: {card_sets}')
+            return card_sets
+        except Exception as e:
+            print(f'TCGP - Occurred the following error trying to get card sets from name: {e}')
+            raise Exception(e)

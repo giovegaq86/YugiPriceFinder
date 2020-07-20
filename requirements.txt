@@ -2,8 +2,11 @@ api==0.0.7
 appdirs==1.4.4
 attrs==19.3.0
 beautifulsoup4==4.9.1
-Flask==1.1.2
+flask==1.1.2
 Flask-RESTful==0.3.8
 requests==2.24.0
 requests-html==0.10.0
 selenium==3.141.0
+Flask-Cors==3.0.8
+uwsgi==2.0.19.1
+webdriver-manager==3.2.1
