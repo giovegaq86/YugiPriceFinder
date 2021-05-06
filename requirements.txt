@@ -7,6 +7,6 @@ Flask-RESTful==0.3.8
 requests==2.24.0
 requests-html==0.10.0
 selenium==3.141.0
-Flask-Cors==3.0.8
+Flask-Cors==3.0.9
 uwsgi==2.0.19.1
 webdriver-manager==3.2.1
